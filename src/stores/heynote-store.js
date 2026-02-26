@@ -18,6 +18,7 @@ export const useHeynoteStore = defineStore("heynote", {
 
         currentEditor: null,
         currentBufferPath: null,
+        blockListVersion: 0,
         currentBufferName: null,
         currentLanguage: null,
         currentLanguageAuto: null,
@@ -174,6 +175,10 @@ export const useHeynoteStore = defineStore("heynote", {
             const recent = this.recentBufferPaths.filter((p) => p !== path)
             recent.unshift(path)
             this.recentBufferPaths = recent.slice(0, 100)
+        },
+
+        bumpBlockListVersion() {
+            this.blockListVersion++
         },
 
         openLanguageSelector() {

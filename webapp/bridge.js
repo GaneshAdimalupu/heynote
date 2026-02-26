@@ -91,6 +91,8 @@ let initialSettings = {
     keyBindings: [],
     showTabs: true,
     showTabsInFullscreen: true,
+    showDocumentListSidebar: false,
+    documentListSidebarWidth: 200,
     cursorBlinkRate: 1000,
 }
 if (settingsData !== null) {
