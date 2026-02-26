@@ -48,6 +48,8 @@ const schema = {
             "showFoldGutter": {type: "boolean", default:true},
             "showTabs": {type: "boolean", default: true},
             "showTabsInFullscreen": {type: "boolean", default: true},
+            "showDocumentListSidebar": {type: "boolean", default: false},
+            "documentListSidebarWidth": {type: "integer", default: 200},
             "autoUpdate": {type: "boolean", default: true},
             "allowBetaVersions": {type: "boolean", default: false},
             "enableGlobalHotkey": {type: "boolean", default: false},

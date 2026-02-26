@@ -14,7 +14,6 @@
             TabItem,
             draggable,
         },
-
         data() {
             return {
                 isMac: window.heynote.platform.isMac,
@@ -31,7 +30,7 @@
                 "settings",
             ]),
             ...mapWritableState(useHeynoteStore, ["openTabs"]),
-            ...mapStores(useEditorCacheStore, useHeynoteStore),
+            ...mapStores(useEditorCacheStore, useHeynoteStore, useSettingsStore),
 
             tabs() {
                 return this.openTabs.map((path) => {
@@ -69,6 +68,10 @@
             showTabs() {
                 return this.settings.showTabs
             },
+
+            showDocumentListSidebar() {
+                return this.settings.showDocumentListSidebar === true
+            },
         },
 
         methods: {
@@ -80,6 +83,13 @@
 
             openBufferSelector() {
                 this.heynoteStore.openBufferSelector()
+            },
+
+            toggleDocumentListSidebar() {
+                this.settingsStore.updateSettings({
+                    showDocumentListSidebar: !this.settings.showDocumentListSidebar,
+                })
+                this.heynoteStore.focusEditor()
             },
 
             dragEnd(event) {
@@ -97,6 +107,16 @@
         <div class="main-menu-container">
             <button class="main-menu"
                 @click="onMainMenuClick"
+            ></button>
+        </div>
+        <div class="sidebar-toggle-container">
+            <button
+                type="button"
+                class="sidebar-toggle"
+                :class="{ active: showDocumentListSidebar }"
+                :title="showDocumentListSidebar ? 'Hide document list' : 'Show document list'"
+                tabindex="-1"
+                @click="toggleDocumentListSidebar"
             ></button>
         </div>
         <template v-if="showTabs">
@@ -131,11 +151,8 @@
                 ></button>
             </div>
         </template>
-        <div 
-            v-else
-            class="title"
-        >
-            {{ currentBufferName }}
+        <div v-else class="title-wrapper">
+            <div class="title">{{ currentBufferName }}</div>
         </div>
     </nav>
 </template>
@@ -235,7 +252,42 @@
                     background-color: #ccc
                     +dark-mode
                         background-color: #3a3a3a
+        .sidebar-toggle-container
+            app-region: none
+            display: flex
+            align-items: center
+            padding: 4px 6px
+            border-right: 1px solid #e6e6e6
+            +dark-mode
+                border-right: 1px solid #242424
+            .sidebar-toggle
+                width: 20px
+                height: 20px
+                border: none
+                background: none
+                border-radius: 3px
+                cursor: pointer
+                transition: background-color 250ms
+                background-image: url("@/assets/icons/document-list-light.svg")
+                background-repeat: no-repeat
+                background-position: center
+                background-size: 14px
+                +dark-mode
+                    background-image: url("@/assets/icons/document-list-dark.svg")
+                &:hover
+                    background-color: #ccc
+                    +dark-mode
+                        background-color: #3a3a3a
+                &.active
+                    background-color: #c5c5c5
+                    +dark-mode
+                        background-color: #3a3a3a
+                    box-shadow: var(--tab-bar-inset-shadow)
         
+        .title-wrapper
+            flex: 1
+            min-width: 0
+            position: relative
         .title
             pointer-events: none
             text-align: center

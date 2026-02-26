@@ -1,5 +1,5 @@
 import { Annotation, EditorState, Compartment, Facet, EditorSelection, Transaction, Prec, RangeSet } from "@codemirror/state"
-import { EditorView, keymap as cmKeymap, drawSelection, highlightWhitespace } from "@codemirror/view"
+import { EditorView, ViewPlugin, keymap as cmKeymap, drawSelection, highlightWhitespace } from "@codemirror/view"
 import { ensureSyntaxTree, foldState, foldEffect } from "@codemirror/language"
 import { markdown, markdownKeymap } from "@codemirror/lang-markdown"
 import { undo, redo } from "@codemirror/commands"
@@ -41,6 +41,15 @@ import { scrollMargin, getScrollMargins } from "./scroll-margin.js"
 // we should be able to remove this. For more details see: https://github.com/heyman/heynote/issues/343
 EditorView.EDIT_CONTEXT = false
 
+function bumpSidebarBlockListOnDocChange(editor) {
+    return ViewPlugin.fromClass(class {
+        update(update) {
+            if (update.docChanged && editor.notesStore.currentBufferPath === editor.path) {
+                editor.notesStore.bumpBlockListVersion()
+            }
+        }
+    })
+}
 
 export class HeynoteEditor {
     constructor({
@@ -88,7 +97,6 @@ export class HeynoteEditor {
         this.errorStore = useErrorStore()
         this.name = ""
         this.selectionMarkMode = false
-        
 
         const state = EditorState.create({
             doc: "",
@@ -123,6 +131,7 @@ export class HeynoteEditor {
                 }),
 
                 autoSaveContent(this, AUTO_SAVE_INTERVAL),
+                bumpSidebarBlockListOnDocChange(this),
 
                 imageExtension(),
 

@@ -20,6 +20,7 @@
     import NewBuffer from './NewBuffer.vue'
     import EditBuffer from './EditBuffer.vue'
     import TabBar from './tabs/TabBar.vue'
+    import DocumentListSidebar from './DocumentListSidebar.vue'
     import DrawImageModal from './draw/DrawImageModal.vue'
 
     export default {
@@ -33,6 +34,7 @@
             NewBuffer,
             EditBuffer,
             TabBar,
+            DocumentListSidebar,
             DrawImageModal,
         },
 
@@ -141,6 +143,10 @@
                     return true
                 }
             },
+
+            showDocumentListSidebar() {
+                return this.settings.showDocumentListSidebar === true
+            },
         },
 
         methods: {
@@ -237,9 +243,14 @@
 <template>
     <TabBar v-if="showTabBar" />
     <div 
-        class="container" 
-        :class="{'tab-bar-visible':showTabBar}"
+        class="main-layout" 
+        :class="{'tab-bar-visible': showTabBar, 'sidebar-visible': showDocumentListSidebar}"
     >
+        <DocumentListSidebar v-if="showDocumentListSidebar" class="document-list-sidebar" />
+        <div 
+            class="container" 
+            :class="{'tab-bar-visible': showTabBar}"
+        >
         <Editor 
             v-if="currentBufferPath"
             :theme="settingsStore.theme"
@@ -306,12 +317,23 @@
             />
             <ErrorMessages />
         </div>
+        </div>
     </div>
 </template>
 
 <style scoped lang="sass">
-    .container
+    .main-layout
+        display: flex
         width: 100%
+        height: 100%
+        min-height: 0
+        &.tab-bar-visible
+            height: calc(100% - var(--tab-bar-height))
+        &.sidebar-visible .container
+            min-width: 0
+    .container
+        flex: 1
+        min-width: 0
         height: 100%
         position: relative
         &.tab-bar-visible
